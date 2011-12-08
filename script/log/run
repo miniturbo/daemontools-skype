@@ -1,4 +1,4 @@
 #!/bin/sh
 
 exec 2>&1
-exec setuidgid skype multilog t /var/log/skype
+exec envdir ./env sh -c 'setuidgid $USER multilog t $LOD_DIR/daemontools'
