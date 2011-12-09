@@ -1,0 +1,4 @@
+#!/bin/sh
+
+exec 2>&1
+exec envdir ./../../env sh -c 'setuidgid $DAEMON_USER multilog t $LOG_DIR/xvfb'
