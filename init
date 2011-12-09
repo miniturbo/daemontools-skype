@@ -1,1 +1,70 @@
-#!/bin/sh
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use autodie;
+use FindBin;
+use Data::Dumper;
+
+my $prompt_vars = [
+    # ['env name', 'message', 'require', 'default value'],
+    ['DAEMON_USER',     'daemon user',     1, 'skype'],
+    ['SKYPE_NAME',      'skype name',      1],
+    ['SKYPE_PASSWORD',  'skype password',  1],
+    ['LOG_DIR',         'log dir',         1, '/var/log/skype'],
+    ['RUN_DIR',         'tmp dir',         1, '/var/run/skype'],
+    ['LIB_DIR',         'lib dir',         1, '/var/lib/skype'],
+    ['X_SERVER_NUM',    'x server num',    1, '10'],
+    ['X_SCREEN_NUM',    'x screen num',    1, '0'],
+    ['X_SCREEN_WIDTH',  'x screen width',  1, '800'],
+    ['X_SCREEN_HEIGHT', 'x screen height', 1, '600'],
+    ['X_SCREEN_DEPTH',  'x screen_depth',  1, '8'],
+    ['DISPLAY',         'display',         1, ':10.0'],
+];
+
+sub run {
+    # header
+    print "#===================#\n";
+    print "# daemontools-skype #\n";
+    print "#===================#\n";
+    print "\n";
+    print "Initialize...\n";
+
+    my $env = &prompt($prompt_vars);
+
+    # uid, pwd
+    my ($uid, $gid) = (getpwnam $env->{DAEMON_USER})[2, 3];
+
+    for (keys %$env) {
+        # make dir
+        if ($_ =~ /_DIR$/) {
+            mkdir $env->{$_} unless -d $env->{$_};
+            chown $uid, $gid, $env->{$_};
+        }
+
+        open FH, '+>', "$FindBin::Bin/env/$_";
+        print FH $env->{$_};
+        close FH;
+    }
+}
+
+sub prompt {
+    my $vars = shift;
+
+    my $env = +{};
+    while (my $var = shift @$vars) {
+        my ($env_name, $message, $require, $default) = @$var;
+        print "  $message" . (defined $default ? " ($default)" : '') . ': ';
+
+        my $input = <STDIN>;
+        chomp $input;
+
+        $input ||= $default if defined $default;
+        die "Error: $message is required" unless defined $input and $input ne '';
+
+        $env->{uc $env_name} = $input;
+    }
+
+    return $env;
+}
+
+&run;
