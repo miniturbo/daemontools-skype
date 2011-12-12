@@ -1,8 +1,8 @@
 #!/bin/sh
 
 exec 2>&1
-exec envdir ../env sh -c '
-    setuidgid $DAEMON_USER \
-        echo "$SKYPE_NAME $SKYPE_PASSWORD" | \
-        nohup skype --dbpath=$LIB_DIR --pipelogin
+exec envdir ./../env sh -c '
+    sleep 3
+    echo "$SKYPE_NAME $SKYPE_PASSWORD" | setuidgid $DAEMON_USER \
+        skype --dbpath=$LIB_DIR --pipelogin
 '

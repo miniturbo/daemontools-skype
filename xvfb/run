@@ -2,10 +2,8 @@
 
 exec 2>&1
 exec envdir ./../env sh -c '
-    setuidgid $DAEMON_USER \
-        xauth -f $RUN_DIR/.Xauthority add $DISPLAY . $(mcookie)
-    setuidgid $DAEMON_USER \
-        Xvfb :${X_SERVER_NUM} \
-            -screen :${X_SCREEN_NUM} ${X_SCREEN_WIDTH}x${X_SCREEN_HEIGHT}x${X_SCREEN_DEPTH} \
-            -nolisten tcp
+    setuidgid $DAEMON_USER xauth add $DISPLAY . $(mcookie)
+    setuidgid $DAEMON_USER Xvfb \
+            :${X_SERVER_NUM} \
+            -screen :${X_SCREEN_NUM} ${X_SCREEN_WIDTH}x${X_SCREEN_HEIGHT}x${X_SCREEN_DEPTH}
 '
