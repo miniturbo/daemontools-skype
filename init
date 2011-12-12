@@ -31,6 +31,9 @@ sub run {
 
     my $env = &prompt($prompt_vars);
 
+    # XAUTHORITY
+    $env->{XAUTHORITY} = "$env->{RUN_DIR}/Xauthority";
+
     # uid, pwd
     my ($uid, $gid) = (getpwnam $env->{DAEMON_USER})[2, 3];
 
